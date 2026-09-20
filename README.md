@@ -18,6 +18,8 @@
 
 三个子应用各自拥有独立的视觉风格与状态容器；顶栏右侧状态胶囊显示当前装载状态，页脚的**事件总线面板**实时展示所有跨应用事件（含发送方、类型、负载、时间），并可一键清空。
 
+顶栏右侧还有一组**「其他站点」**入口 —— 它们是与微前端完全无关的独立静态子站，见[第 7 节](#7-独立静态子站sites)。
+
 ---
 
 ## 1. 快速开始
@@ -68,6 +70,10 @@ pnpm run dev:vue        # 独立开发 Vue 子应用    → http://localhost:517
 │  ├─ react-19/src/{mfe.tsx,App.tsx,store.ts}
 │  └─ vue-3/src/{mfe.ts,App.vue,stores/counter.ts}
 ├─ packages/contract/src/index.ts   ★ 唯一契约：MfeMountContext / MicroAppModule / MfeBus
+├─ sites/                      独立静态子站（不参与构建，整目录复制到 dist/<name>/）
+│  ├─ blog/index.html          博客列表示例
+│  ├─ my-docs/index.html       文档站示例（VitePress 风格）
+│  └─ what-ever/index.html     沙盒示例（Canvas 粒子 + 交互）
 ├─ tools/
 │  ├─ mfe-manifest.ts          构建期生成 manifest.json 的 Vite 插件
 │  ├─ dev-host.ts              独立开发用的 Shadow DOM 宿主
@@ -240,7 +246,46 @@ Shell → fetch  apps/<id>/manifest.json?t=<时间戳>   （no-store，永远拿
 
 ---
 
-## 7. 部署到 GitHub Pages
+## 7. 独立静态子站（sites/）
+
+除了微前端子应用，仓库还能承载**任意多个完全独立的静态站点**。它们与微前端运行时互不相干，只是和 Shell 一起发布在同一个域名下：
+
+| 子站 | 访问路径 | 内容 |
+| --- | --- | --- |
+| `sites/blog/` | `<站点根>/blog/` | 纯手写博客列表，零依赖零构建 |
+| `sites/my-docs/` | `<站点根>/my-docs/` | VitePress 风格文档站，演示子路径落位 |
+| `sites/what-ever/` | `<站点根>/what-ever/` | Canvas 粒子沙盒 + 交互演示 |
+
+| blog | my-docs | what-ever |
+| --- | --- | --- |
+| ![blog 子站](docs/screenshots/site-blog.png) | ![my-docs 子站](docs/screenshots/site-my-docs.png) | ![what-ever 子站](docs/screenshots/site-what-ever.png) |
+
+### 它和微前端子应用的区别
+
+| | 微前端子应用（`apps/`） | 静态子站（`sites/`） |
+| --- | --- | --- |
+| 加载方式 | Shell 装载器动态 `import()` + Shadow DOM 挂载 | 浏览器直接加载普通 HTML |
+| 参与事件总线 | 是 | 否，Shell 不知道它存在 |
+| 需要构建 | 需要（Vite lib 模式 + manifest） | 不需要，整目录复制 |
+| 源码 / 产物 | `apps/<id>/` → `dist/apps/<id>/` | `sites/<name>/` → `dist/<name>/` |
+
+### 新增一个静态子站
+
+1. 在 `sites/` 下新建目录（例如 `sites/notes/`），里面放一个 `index.html` —— 入口必须叫这个名字，构建脚本会校验；
+2. `pnpm run build`，脚本会把 `sites/*` 整目录复制到 `dist/*`；
+3. 想让它出现在 Shell 顶栏，在 `shell/index.html` 的「其他站点」导航里加一个链接即可。
+
+> 开发模式（`pnpm run dev`）下这些路径同样可访问：Shell 的开发中间件按目录名**动态匹配** `sites/` 下的子目录，新增子站不用改任何配置。
+> 顶栏链接用的是**相对路径**（`href="notes/"`），项目页（`/<repo>/notes/`）与用户页（`/notes/`）都能正确解析。
+> 这类站点与 hash 路由的 Shell 不会冲突：Shell 的地址永远是 `/<站点根>/#/...`，路径部分保持 `/`，抢不到任何子目录的位置。
+
+### 换成真正的站点生成器
+
+`sites/<name>/` 只是一个「最终产物」目录，可以随时替换成 Astro / Hexo / VitePress 等的构建产物。唯一要求：**生成器的 `base` 必须配成 `<name>/`**（首尾都带斜杠，与目录名完全一致），否则资源会 404 —— 这是子路径部署最常见的坑。
+
+---
+
+## 8. 部署到 GitHub Pages
 
 1. 新建 GitHub 仓库并推送代码。**必须提交 `pnpm-lock.yaml`**（CI 用 `pnpm install --frozen-lockfile`），且**不要**再提交 `package-lock.json`；
 2. 仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**；
@@ -267,7 +312,7 @@ CI 的 pnpm 版本不写死在 workflow 里，而是由根 `package.json` 的 `p
 
 ---
 
-## 8. 已知限制与注意事项
+## 9. 已知限制与注意事项
 
 **架构层面**
 
@@ -299,7 +344,7 @@ CI 的 pnpm 版本不写死在 workflow 里，而是由根 `package.json` 的 `p
 
 ---
 
-## 9. 常见问题
+## 10. 常见问题
 
 **Q：点「广播到其他子应用」后，切到别的子应用发现界面没变化？**
 A：这是设计使然，但要分清看哪里：**Shell 页脚的事件总线面板**会立即出现这条消息（发送方、类型、负载、时间）。其他子应用当时如果没挂载，自然收不到实时事件 —— 它们会在你切过去时通过离线回放补收到，日志里显示为「离线期间：vanilla 曾广播计数 3」。详见第 4 节「事件的真实语义」。

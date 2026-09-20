@@ -3,6 +3,13 @@ dist/
 .vite/
 *.tsbuildinfo
 
+# WorkBuddy 会话数据（本地记忆、临时状态），与项目本身无关，不进版本库
+.workbuddy/
+
+# 临时文件
+.tmp-*
+*.tmp
+
 # Vite 对 ts 配置文件的编译缓存（dev 启动时产生）
 vite.config.ts.timestamp-*.mjs
 
