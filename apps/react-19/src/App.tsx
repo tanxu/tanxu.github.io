@@ -31,9 +31,14 @@ export function App({ bus, env, route }: AppProps) {
   }, [route, appendLog])
 
   useEffect(() => {
-    // 订阅其他子应用的广播；返回的清理函数交给 React，卸载时自动执行
+    // 订阅其他子应用的广播；返回的清理函数交给 React，卸载时自动执行。
+    // replayed 为 true 表示这是「离线期间」错过的消息，由 Shell 在挂载后补投。
     return bus.on<{ total: number; from: string }>('counter:changed', (event) => {
-      appendLog(`收到 ${event.source} 的计数 ${event.detail.total}`)
+      appendLog(
+        event.replayed
+          ? `离线期间：${event.source} 曾广播计数 ${event.detail.total}`
+          : `收到 ${event.source} 的计数 ${event.detail.total}`
+      )
     })
   }, [bus, appendLog])
 

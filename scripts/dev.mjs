@@ -19,7 +19,7 @@ if (target) {
 }
 
 /**
- * 独立开发模式：npm run dev:vanilla | dev:react | dev:vue
+ * 独立开发模式：pnpm run dev:vanilla | dev:react | dev:vue
  * 只启动单个子应用的 vite dev server（带 HMR），
  * 页面里用 tools/dev-host.ts 复刻了 Shell 的 Shadow DOM 环境。
  */
@@ -33,7 +33,7 @@ function runStandalone(dir) {
   if (pkg.dir === 'shell') {
     console.error(
       'Shell 需要加载子应用构建产物，无法独立启动。\n' +
-        '请使用 `npm run dev`（集成模式），或先 `npm run build` 再 `npm run preview`。'
+        '请使用 `pnpm run dev`（集成模式），或先 `pnpm run build` 再 `pnpm run preview`。'
     )
     process.exit(1)
   }
@@ -47,7 +47,7 @@ function runStandalone(dir) {
 }
 
 /**
- * 集成开发模式：npm run dev
+ * 集成开发模式：pnpm run dev
  *
  * 1. 先完整构建一次，生成 dist/
  * 2. 三个子应用进入 `vite build --watch`，源码改动自动重建产物
@@ -87,7 +87,7 @@ function runIntegrated() {
 
   console.log('\n▶ 启动 Shell 开发服务器')
   console.log('  地址：http://localhost:5173/')
-  console.log('  提示：子应用也可以单独跑 `npm run dev:<app>` 获得 HMR 体验。')
+  console.log('  提示：子应用也可以单独跑 `pnpm run dev:<app>` 获得 HMR 体验。')
   console.log('  退出：Ctrl + C\n')
 
   const shell = spawnScript('shell', 'dev')

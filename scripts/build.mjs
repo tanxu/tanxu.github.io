@@ -60,4 +60,4 @@ if (problems.length > 0) {
   process.exit(1)
 }
 
-console.log('\n✅ 构建完成。本地预览：npm run preview   集成开发：npm run dev')
+console.log('\n✅ 构建完成。本地预览：pnpm run preview   集成开发：pnpm run dev')

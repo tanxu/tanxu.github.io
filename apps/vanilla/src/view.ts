@@ -31,7 +31,11 @@ const TEMPLATE = `
         <button type="button" class="btn" data-action="broadcast">广播到其他子应用</button>
         <button type="button" class="btn btn--ghost" data-action="reset">重置</button>
       </div>
-      <p class="hint">切到其他子应用再切回来，这里的计数会保留 —— 卸载只清理副作用，不销毁模块实例。</p>
+      <p class="hint">
+        切到其他子应用再切回来，计数会保留（卸载只清理副作用，不销毁模块实例）。
+        广播出去的计数会进入 Shell 的事件流；当时没打开的子应用，下次打开时
+        会以「离线期间」的名义补收到这条消息。
+      </p>
     </section>
 
     <section class="panel">

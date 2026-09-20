@@ -41,9 +41,14 @@ export function mount(ctx: MfeMountContext): void {
 
   // 订阅其他子应用的广播。返回的取消订阅函数必须在 unmount 里执行，
   // 否则子应用被切走后 handler 仍挂在总线上 —— 这是微前端最常见的泄漏点。
+  // replayed 为 true 表示这是「离线期间」错过的消息，由 Shell 在挂载后补投。
   disposers.push(
     ctx.bus.on<{ total: number; from: string }>('counter:changed', (event) => {
-      appendLog(`收到 ${event.source} 的计数 ${event.detail.total}`)
+      appendLog(
+        event.replayed
+          ? `离线期间：${event.source} 曾广播计数 ${event.detail.total}`
+          : `收到 ${event.source} 的计数 ${event.detail.total}`
+      )
     })
   )
 

@@ -3,6 +3,9 @@ dist/
 .vite/
 *.tsbuildinfo
 
+# Vite 对 ts 配置文件的编译缓存（dev 启动时产生）
+vite.config.ts.timestamp-*.mjs
+
 # 编辑器
 .vscode/*
 !.vscode/extensions.json

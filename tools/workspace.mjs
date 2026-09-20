@@ -7,7 +7,7 @@ export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
 /**
  * 所有可构建的包。
- * port 仅用于独立开发模式（`npm run dev:<app>`）。
+ * port 仅用于独立开发模式（`pnpm run dev:<app>`）。
  */
 export const PACKAGES = [
   { dir: 'shell', label: 'Shell 主应用', port: 5173 },

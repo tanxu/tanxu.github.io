@@ -23,22 +23,27 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
+      # pnpm 必须在 setup-node 之前安装：setup-node 的 cache: pnpm 需要先找到 pnpm。
+      # 这里不写 version，版本由根 package.json 的 packageManager 字段决定，
+      # 保证 CI 与本地开发使用同一个 pnpm 版本。
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v4
+
       - name: 安装 Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: 22
+          cache: pnpm
 
-      # 若改用 pnpm：删掉本步骤前的 setup-node cache 改为 pnpm，
-      # 并加 `pnpm/action-setup@v4`，随后把 npm run 换成 pnpm。
+      # 锁定文件必须随代码提交，--frozen-lockfile 保证 CI 不会静默升级依赖
       - name: 安装依赖
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: 类型检查
-        run: npm run typecheck
+        run: pnpm run typecheck
 
       - name: 构建（Shell + 三个子应用合并产物到 dist/）
-        run: npm run build
+        run: pnpm run build
 
       # enablement: 若仓库尚未启用 Pages，自动以「GitHub Actions」模式启用，
       # 避免首次部署因 Pages 未开启而失败。

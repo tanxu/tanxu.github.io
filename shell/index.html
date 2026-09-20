@@ -23,8 +23,18 @@
       </main>
 
       <footer class="shell__footer">
-        <span>Shell 不持有业务状态 · 子应用通过 CustomEvent 契约通信</span>
-        <span class="shell__events" id="events">最近事件：—</span>
+        <div class="shell__bus">
+          <div class="shell__bus-head">
+            <span class="shell__bus-title">事件总线</span>
+            <span class="shell__bus-desc">
+              Shell 不持有业务状态，只做消息中转 · 子应用挂载时会补齐离线期间错过的事件
+            </span>
+            <button type="button" class="shell__bus-clear" id="bus-clear">清空</button>
+          </div>
+          <ul class="shell__bus-list" id="events" aria-label="跨应用事件流">
+            <li class="shell__bus-empty">暂无跨应用事件</li>
+          </ul>
+        </div>
       </footer>
     </div>
 

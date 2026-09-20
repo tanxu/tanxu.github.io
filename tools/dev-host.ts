@@ -18,7 +18,7 @@ export interface DevHostOptions {
 }
 
 /**
- * 独立开发宿主（仅 `npm run dev:<app>` 使用，不进入任何构建产物）。
+ * 独立开发宿主（仅 `pnpm run dev:<app>` 使用，不进入任何构建产物）。
  *
  * 刻意复刻 Shell 的运行时环境：Shadow DOM 边界 + 只读 env + 事件总线。
  * 这样在独立调试阶段就能提前暴露 Shadow DOM 相关的样式问题，

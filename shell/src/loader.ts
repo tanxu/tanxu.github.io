@@ -1,8 +1,18 @@
-import type { AppManifest, MfeBus, MfeEnv, MfeMountContext, MicroAppModule } from '@mfe/contract'
-import { createBus } from './bus'
+import type { AppManifest, MfeEnv, MfeEvent, MfeMountContext, MicroAppModule } from '@mfe/contract'
+import { createBus, type BusFacade } from './bus'
 import type { AppDefinition } from './registry'
 
 const MANIFEST_FILE = 'manifest.json'
+
+/**
+ * 离线回放的投递延迟。
+ *
+ * 为什么不能同步投递：React 的 useEffect / Vue 的 onMounted 注册订阅的时机不同 ——
+ * React 的 effect 由调度器在渲染提交后异步 flush，如果 shell 在 mount() 返回后
+ * 立即回放历史事件，React 那边 handler 还没注册，事件会被静默丢弃。
+ * 统一延后一个事件循环（50ms，覆盖 React 的调度窗口）后再投递。
+ */
+const REPLAY_DELAY_MS = 50
 
 type StatusKind = 'idle' | 'loading' | 'ready' | 'error'
 
@@ -22,11 +32,16 @@ interface Instance {
    * 为什么每个子应用一份：总线需要知道「我在替谁发消息」才能正确过滤掉自己发出的事件。
    * 所有门面共用 document 上的同一个通道，但各自持有独立的订阅表与发送方标识，
    * 因此既不会自触发回声，也不会把 A 的事件误判成 B 自己发的。
+   *
+   * 类型用 `BusFacade`（而非对外的 `MfeBus`）：它额外带 Shell 内部才用的 `replay`，
+   * 子应用通过 `ctx.bus` 拿到的仍然是干净的 `MfeBus` 接口。
    */
-  bus: MfeBus
+  bus: BusFacade
   module: MicroAppModule | null
   env: MfeEnv | null
   mounted: boolean
+  /** 已投递给该子应用的最大事件时间戳，保证每次挂载只补投「上次离线之后」的事件 */
+  lastDeliveredTs: number
 }
 
 export interface RuntimeOptions {
@@ -36,6 +51,8 @@ export interface RuntimeOptions {
   baseStyle: string
   /** 站点根 URL，由 `new URL('./', location.href)` 得到，项目页与用户页通吃 */
   siteRoot: URL
+  /** 读取 Shell 缓存的最近跨应用事件，用于子应用挂载后的离线回放 */
+  getRecentEvents(): readonly MfeEvent<unknown>[]
   onStatus(text: string, kind?: StatusKind): void
 }
 
@@ -53,6 +70,9 @@ export interface RuntimeOptions {
  * 实例缓存：子应用一旦加载就常驻（module 与 ShadowRoot 都保留），
  * 切走时只调用其 unmount 清理副作用，切回来直接复用，
  * 因此各子应用的内部状态天然互不干扰且不会互相清零。
+ *
+ * 事件语义：同一时刻只有一个子应用处于挂载状态，因此跨应用事件实际传递的是
+ * 「你不在场时发生过什么」。Shell 缓存最近的事件，在子应用挂载后补投它错过的部分。
  */
 export class MicroFrontendRuntime {
   private readonly instances = new Map<string, Instance>()
@@ -107,12 +127,15 @@ export class MicroFrontendRuntime {
       if (!instance.mounted) {
         await module.mount(this.createContext(instance, subPath))
         instance.mounted = true
+        // 补齐该子应用离线期间错过的跨应用事件
+        this.replayMissedEvents(instance)
       } else if (typeof module.update === 'function') {
         await module.update({ route: subPath })
       } else {
         // 子应用未实现 update：退化为 unmount + mount，状态会重置
         await module.unmount()
         await module.mount(this.createContext(instance, subPath))
+        instance.mounted = true
       }
       this.options.onStatus(`${def.title} 已就绪`, 'ready')
     } catch (error) {
@@ -149,7 +172,8 @@ export class MicroFrontendRuntime {
       bus: createBus(() => def.id),
       module: null,
       env: null,
-      mounted: false
+      mounted: false,
+      lastDeliveredTs: Number.NEGATIVE_INFINITY
     }
     this.instances.set(def.id, instance)
     return instance
@@ -165,7 +189,7 @@ export class MicroFrontendRuntime {
     const response = await fetch(manifestUrl, { cache: 'no-store' })
     if (!response.ok) {
       throw new Error(
-        `manifest.json 拉取失败（HTTP ${response.status}）：${manifestUrl} —— 请先执行完整构建（npm run build）。`
+        `manifest.json 拉取失败（HTTP ${response.status}）：${manifestUrl} —— 请先执行完整构建（pnpm run build）。`
       )
     }
 
@@ -194,6 +218,31 @@ export class MicroFrontendRuntime {
       builtAt: manifest.builtAt,
       hash: manifest.hash
     }
+  }
+
+  /**
+   * 把子应用离线期间错过的跨应用事件补投给它。
+   *
+   * 只投递「上次离线之后」发生的事件（由 lastDeliveredTs 界定），
+   * 否则每次切回该子应用都会把整段历史重复灌一遍。
+   */
+  private replayMissedEvents(instance: Instance): void {
+    const pending = this.options
+      .getRecentEvents()
+      .filter(
+        (event) =>
+          event.source !== instance.def.id && event.timestamp > instance.lastDeliveredTs
+      )
+
+    if (pending.length === 0) return
+
+    // 先推进水位线再投递：快速来回切换时同一批事件不会被重复补投
+    instance.lastDeliveredTs = Date.now()
+
+    window.setTimeout(() => {
+      // 延迟期间被切走则放弃：unmount 已取消订阅，投递没有意义
+      if (instance.mounted) instance.bus.replay(pending)
+    }, REPLAY_DELAY_MS)
   }
 
   private loadStyle(instance: Instance, href: string): Promise<void> {

@@ -2,3 +2,13 @@ packages:
   - shell
   - apps/*
   - packages/*
+
+# pnpm 11 起，依赖的安装脚本（postinstall 等）默认被阻止；且 strictDepBuilds 默认为 true，
+# 遇到未审查的构建脚本会直接以 ERR_PNPM_IGNORED_BUILDS 让 install 失败。
+# 下面显式放行本项目真正需要的两个（放行的是"审查过的构建脚本"，不是"允许全部"）：
+#   esbuild  —— Vite 的底层打包器，postinstall 用于准备平台二进制
+#   vue-demi —— Pinia 的依赖，postinstall 用于按已安装的 Vue 版本切换入口文件
+# 新增需要 postinstall 的依赖时，pnpm 会在这里写入占位符，把它改成 true 即可。
+allowBuilds:
+  esbuild: true
+  vue-demi: true

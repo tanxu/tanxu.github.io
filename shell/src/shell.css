@@ -163,22 +163,99 @@ body {
   display: block;
 }
 
-/* ---------- 页脚 ---------- */
+/* ---------- 页脚：跨应用事件流 ---------- */
 
 .shell__footer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px 16px;
-  padding: 10px 20px;
+  padding: 10px 20px 12px;
   border-top: 1px solid var(--shell-border);
   background: var(--shell-surface);
   color: var(--shell-muted);
   font-size: 12px;
 }
 
-.shell__events {
+.shell__bus-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.shell__bus-title {
+  color: var(--shell-text);
+  font-weight: 500;
+}
+
+.shell__bus-desc {
+  flex: 1;
+  min-width: 0;
+}
+
+.shell__bus-clear {
+  padding: 2px 10px;
+  border: 1px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-bg);
+  color: var(--shell-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.shell__bus-clear:hover {
+  border-color: #afb8c1;
+  color: var(--shell-text);
+}
+
+.shell__bus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 108px;
+  margin: 0;
+  padding: 6px 0 0;
+  border-top: 1px dashed var(--shell-border);
+  list-style: none;
+  overflow-y: auto;
+}
+
+.shell__bus-empty {
+  color: #8c959f;
+}
+
+.shell__bus-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.shell__bus-time {
+  color: #8c959f;
   font-variant-numeric: tabular-nums;
+}
+
+.shell__bus-source {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #ddf4ff;
+  color: #0a3069;
+  font-weight: 500;
+}
+
+.shell__bus-type {
+  color: var(--shell-accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.shell__bus-payload {
+  color: var(--shell-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.shell__bus-tag {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #fff1e5;
+  color: #bc4c00;
 }
 
 @media (max-width: 720px) {

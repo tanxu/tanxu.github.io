@@ -19,20 +19,38 @@ export interface MfeEvent<T = unknown> {
   detail: T
   /** 事件发送方的 appId */
   source: AppId
-  /** 发送时刻（Date.now()） */
+  /** 发送时刻（Date.now()）。回放事件的 timestamp 是它**真实发生**的时间，不是投递时间 */
   timestamp: number
+  /**
+   * 是否为「离线回放」事件。
+   *
+   * 同一时刻只有一个子应用处于挂载状态（其余已 unmount 并取消订阅），
+   * 因此 Shell 会缓存最近的跨应用事件，并在子应用挂载后把它离线期间
+   * 错过的事件补投一遍，这些事件的 `replayed` 为 `true`。
+   *
+   * **副作用敏感的 handler 必须处理这个标记**：例如「收到事件就发起请求」
+   * 的逻辑，在回放时应当跳过，否则会重复执行历史动作。
+   */
+  replayed?: boolean
 }
 
 export type MfeEventHandler<T = unknown> = (event: MfeEvent<T>) => void
 
 /**
  * 跨应用事件总线。这是子应用之间唯一被允许的通信通道。
- * 事件不会回传给发送者自身，避免自触发回声循环。
+ *
+ * 语义要点：
+ * 1. 事件不会回传给发送者自身，避免自触发回声循环。
+ * 2. 只有**当前挂载中**的子应用能实时收到事件；未挂载的子应用会在下次
+ *    挂载时通过 Shell 的离线回放补齐（见 `MfeEvent.replayed`）。
  */
 export interface MfeBus {
   /** 广播事件给其余所有子应用与 Shell */
   emit<T = unknown>(type: string, detail?: T): void
-  /** 订阅事件，返回取消订阅函数 */
+  /**
+   * 订阅事件，返回取消订阅函数。
+   * `type` 传 `'*'` 表示通配订阅：该 handler 会收到所有类型的事件。
+   */
   on<T = unknown>(type: string, handler: MfeEventHandler<T>): () => void
   /** 订阅一次，触发后自动取消 */
   once<T = unknown>(type: string, handler: MfeEventHandler<T>): () => void
