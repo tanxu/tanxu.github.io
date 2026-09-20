@@ -1,4 +1,4 @@
-import { createReadStream, existsSync, statSync } from 'node:fs'
+import { createReadStream, statSync } from 'node:fs'
 import { extname, join, normalize, resolve } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 
@@ -45,15 +45,11 @@ function sendFile(
 }
 
 /**
- * 开发期把两类静态资源挂到与线上完全一致的路径下。
+ * 开发期把子应用构建产物挂到与线上完全一致的路径下。
  *
- * 1. `/apps/<id>/...`  → `dist/apps/<id>/...`
- *    子应用源码由各自的 `vite build --watch` 负责重建，这里只负责把重建结果吐出来。
- *    这样开发期与线上行为一致：加载器永远面对「构建产物 + manifest.json」。
- *
- * 2. `/<site>/...`     → `sites/<site>/...`
- *    `sites/` 下的独立静态子站在线上位于 `dist/<site>/`，即 `/<站点根>/<site>/`。
- *    这里按目录名动态匹配，所以新增一个子站只要建目录，不用改这个文件。
+ * `/apps/<id>/...`  → `dist/apps/<id>/...`
+ * 子应用源码由各自的 `vite build --watch` 负责重建，这里只负责把重建结果吐出来。
+ * 这样开发期与线上行为一致：加载器永远面对「构建产物 + manifest.json」。
  */
 function serveStaticTrees(): Plugin {
   return {
@@ -61,7 +57,6 @@ function serveStaticTrees(): Plugin {
     apply: 'serve',
     configureServer(server) {
       const distApps = resolve(server.config.root, '../dist/apps')
-      const sitesRoot = resolve(server.config.root, '../sites')
 
       server.middlewares.use((req, res, next) => {
         const url = req.url
@@ -71,15 +66,6 @@ function serveStaticTrees(): Plugin {
 
         if (pathname.startsWith('/apps/')) {
           return sendFile(res, next, distApps, pathname.slice('/apps/'.length))
-        }
-
-        // 只匹配真实存在于 sites/ 下的一级目录，其余请求（/@vite、/src、/index.html 等）直接放行
-        const site = pathname.split('/')[1]
-        if (site) {
-          const siteDir = resolve(sitesRoot, site)
-          if (siteDir.startsWith(sitesRoot) && existsSync(siteDir)) {
-            return sendFile(res, next, siteDir, pathname.slice(site.length + 2))
-          }
         }
 
         next()

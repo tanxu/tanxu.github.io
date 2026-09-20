@@ -259,43 +259,8 @@ body {
   color: #bc4c00;
 }
 
-/* ---------- 其他站点入口（独立静态子站，与微前端运行时无关） ---------- */
-
-.shell__sites {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding-left: 14px;
-  border-left: 1px solid var(--shell-border);
-  white-space: nowrap;
-}
-
-.shell__sites-label {
-  color: var(--shell-muted);
-  font-size: 11px;
-}
-
-.shell__site-link {
-  padding: 2px 9px;
-  border: 1px solid var(--shell-border);
-  border-radius: 999px;
-  color: var(--shell-muted);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12px;
-  text-decoration: none;
-}
-
-.shell__site-link:hover {
-  border-color: #afb8c1;
-  color: var(--shell-text);
-}
-
 @media (max-width: 720px) {
   .shell__nav-stack {
-    display: none;
-  }
-
-  .shell__sites-label {
     display: none;
   }
 
