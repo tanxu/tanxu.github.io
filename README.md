@@ -194,6 +194,11 @@ Shell → fetch  apps/<id>/manifest.json?t=<时间戳>   （no-store，永远拿
 
 1. 新建 GitHub 仓库并推送代码（**务必提交 `package-lock.json`**，CI 用 `npm ci`）；
 2. 仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**；
+   > ⚠️ **这一步不能跳过。** 若保持默认的「Deploy from a branch」，GitHub 会额外跑一个内置的
+   > `pages build and deployment`（Jekyll）流程，把仓库根目录当成站点构建 —— 而本模板根目录
+   > 只有 `README.md`，结果就是访问域名时显示 README 内容，本模板的 `dist/` 永远不会生效。
+   > 两个流程会长期并存、互相覆盖。改成 **GitHub Actions** 后，Jekyll 流程立即停止触发。
+   > 验证：仓库 Actions 列表里**不应**再出现 `pages build and deployment` 这条记录。
 3. 推送到 `main` 分支即自动触发 `.github/workflows/deploy.yml`：类型检查 → 构建 → 上传 `dist/` → 部署；
 4. 站点地址：
    - 项目页 `https://<user>.github.io/<repo>/`
@@ -235,6 +240,9 @@ Shell → fetch  apps/<id>/manifest.json?t=<时间戳>   （no-store，永远拿
 ---
 
 ## 9. 常见问题
+
+**Q：Actions 部署显示成功，但访问域名看到的是 README 内容？**
+A：仓库 Pages 的部署来源还停留在「Deploy from a branch」，GitHub 会另外跑一个内置的 Jekyll 流程把仓库**根目录**当站点构建 —— 根目录只有 `README.md`，于是 README 成了首页，本模板的 `dist/` 从未被采用。两个流程会同时存在并互相覆盖。修复：**Settings → Pages → Source** 改为 **GitHub Actions**，再 **Actions → Deploy to GitHub Pages → Run workflow** 重跑一次（切换来源不会自动重新部署）。修复成功的判据：线上首页 HTML 里能搜到 `id="mfe-stage"`，且 Actions 列表中不再出现 `pages build and deployment`。
 
 **Q：切到某个子应用显示「加载失败」？**
 A：`manifest.json` 拉取失败，通常是没跑过完整构建。执行 `npm run build` 后重试；`npm run dev` 会自动先构建一次。

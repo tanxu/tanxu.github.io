@@ -40,8 +40,14 @@ jobs:
       - name: 构建（Shell + 三个子应用合并产物到 dist/）
         run: npm run build
 
+      # enablement: 若仓库尚未启用 Pages，自动以「GitHub Actions」模式启用，
+      # 避免首次部署因 Pages 未开启而失败。
+      # 注意：若 Pages 已启用且来源是「Deploy from a branch」，本步骤不会改动来源，
+      # 需在 Settings → Pages → Source 手动切换为 GitHub Actions（见 README 第 7 节）。
       - name: 配置 Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: 上传产物
         uses: actions/upload-pages-artifact@v3
