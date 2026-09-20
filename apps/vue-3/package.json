@@ -1,0 +1,24 @@
+{
+  "name": "@mfe/app-vue",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vue 3 子应用：Pinia 状态管理，Shadow DOM 隔离",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "pinia": "^2.3.0",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vue-tsc": "^2.1.10"
+  }
+}

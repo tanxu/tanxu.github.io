@@ -1,0 +1,161 @@
+/* 原生 JavaScript 子应用样式。
+   全部写在 ShadowRoot 内，不会泄漏到 Shell 或其他子应用；
+   Shell 注入的 --mfe-* 设计变量在这里直接可用。 */
+
+.app {
+  --app-accent: #0969da;
+  --app-accent-soft: #ddf4ff;
+  --app-accent-border: #54aeff;
+
+  background: var(--mfe-surface, #ffffff);
+  border: 1px solid var(--mfe-border, #d8dee4);
+  border-radius: 12px;
+  overflow: hidden;
+  color: var(--mfe-text, #1f2328);
+}
+
+.app__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--mfe-border, #d8dee4);
+  background: var(--mfe-surface-alt, #f6f8fa);
+}
+
+.app__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.app__desc {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--mfe-muted, #656d76);
+}
+
+.app__badge {
+  padding: 2px 8px;
+  border: 1px solid var(--app-accent-border);
+  border-radius: 999px;
+  background: var(--app-accent-soft);
+  color: var(--app-accent);
+  font-family: var(--mfe-font-mono, monospace);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.app__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  padding: 20px;
+}
+
+.panel {
+  padding: 14px 16px;
+  border: 1px solid var(--mfe-border, #d8dee4);
+  border-radius: 8px;
+}
+
+.panel__label {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--mfe-muted, #656d76);
+}
+
+.counter {
+  margin: 0 0 12px;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--app-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn {
+  padding: 5px 12px;
+  border: 1px solid var(--mfe-border, #d8dee4);
+  border-radius: 6px;
+  background: var(--mfe-surface-alt, #f6f8fa);
+  color: var(--mfe-text, #1f2328);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  border-color: #b4b2a9;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--app-accent);
+  outline-offset: 1px;
+}
+
+.btn--primary {
+  border-color: var(--app-accent-border);
+  background: var(--app-accent-soft);
+  color: #0a3069;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--mfe-muted, #656d76);
+}
+
+.hint {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--mfe-muted, #656d76);
+}
+
+.log {
+  margin: 0;
+  padding: 0;
+  max-height: 220px;
+  overflow: auto;
+  list-style: none;
+  font-family: var(--mfe-font-mono, monospace);
+  font-size: 12px;
+}
+
+.log li {
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--mfe-border, #d8dee4);
+  word-break: break-all;
+}
+
+.log li:last-child {
+  border-bottom: none;
+}
+
+.log__empty {
+  color: var(--mfe-muted, #656d76);
+}
+
+.app__foot {
+  padding: 10px 20px;
+  border-top: 1px solid var(--mfe-border, #d8dee4);
+  background: var(--mfe-surface-alt, #f6f8fa);
+  color: var(--mfe-muted, #656d76);
+  font-family: var(--mfe-font-mono, monospace);
+  font-size: 11px;
+  word-break: break-all;
+}
+
+@media (max-width: 720px) {
+  .app__body {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 14px;
+  }
+}

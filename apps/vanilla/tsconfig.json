@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vite/client", "node"],
+    "paths": {
+      "@mfe/contract": ["../../packages/contract/src/index.ts"]
+    }
+  },
+  "include": ["src", "vite.config.ts"]
+}

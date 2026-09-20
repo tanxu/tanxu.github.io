@@ -1,0 +1,19 @@
+{
+  "name": "@mfe/shell",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "微前端 Shell 主应用：hash 路由 + 子应用加载器 + 跨应用事件总线，自身不含任何业务状态",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}

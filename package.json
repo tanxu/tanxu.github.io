@@ -1,0 +1,26 @@
+{
+  "name": "mfe-gh-pages-template",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "微前端模板：Shell 主应用 + 原生 JavaScript / React 19 / Vue 3 三个独立子应用，部署于 GitHub Pages",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "shell",
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/dev.mjs",
+    "dev:shell": "node scripts/dev.mjs shell",
+    "dev:vanilla": "node scripts/dev.mjs apps/vanilla",
+    "dev:react": "node scripts/dev.mjs apps/react-19",
+    "dev:vue": "node scripts/dev.mjs apps/vue-3",
+    "preview": "node scripts/preview.mjs",
+    "typecheck": "node scripts/typecheck.mjs",
+    "clean": "node scripts/clean.mjs"
+  }
+}

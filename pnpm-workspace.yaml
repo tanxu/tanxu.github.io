@@ -1,0 +1,4 @@
+packages:
+  - shell
+  - apps/*
+  - packages/*

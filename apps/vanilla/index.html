@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>独立调试 · 原生 JavaScript 子应用</title>
+    <meta name="description" content="仅用于独立开发调试，不参与构建产物" />
+    <style>
+      body {
+        margin: 0;
+        padding: 14px;
+        background: #f6f8fa;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei',
+          sans-serif;
+        font-size: 13px;
+        color: #656d76;
+      }
+      .dev-hint {
+        max-width: 1080px;
+        margin: 0 auto 14px;
+        padding: 8px 12px;
+        border: 1px dashed #b4b2a9;
+        border-radius: 8px;
+        background: #fff;
+      }
+      .dev-hint code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        color: #0969da;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="dev-hint">
+      独立调试模式（<code>npm run dev:vanilla</code>）· 页面结构已复刻 Shell 的 Shadow DOM 环境 · 集成请访问 Shell
+    </p>
+    <div id="app"></div>
+    <script type="module" src="/src/dev-standalone.ts"></script>
+  </body>
+</html>

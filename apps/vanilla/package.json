@@ -1,0 +1,18 @@
+{
+  "name": "@mfe/app-vanilla",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "原生 JavaScript 子应用：无框架，自研 EventTarget Store，Shadow DOM 隔离",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}

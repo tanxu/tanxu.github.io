@@ -1,0 +1,192 @@
+/* Shell 自身的样式 —— 只作用于 light DOM，绝不进入任何子应用的 ShadowRoot */
+
+:root {
+  color-scheme: light;
+  --shell-bg: #f6f8fa;
+  --shell-surface: #ffffff;
+  --shell-border: #d8dee4;
+  --shell-text: #1f2328;
+  --shell-muted: #656d76;
+  --shell-accent: #0969da;
+  --shell-radius: 8px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--shell-bg);
+  color: var(--shell-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ---------- 顶栏 ---------- */
+
+.shell__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 20px;
+  min-height: 60px;
+  background: var(--shell-surface);
+  border-bottom: 1px solid var(--shell-border);
+}
+
+.shell__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.shell__logo {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  background: var(--shell-accent);
+}
+
+.shell__nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.shell__nav-item {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--shell-radius);
+  color: var(--shell-text);
+  text-decoration: none;
+  line-height: 1.3;
+}
+
+.shell__nav-item:hover {
+  background: var(--shell-bg);
+}
+
+.shell__nav-item[aria-current='page'] {
+  background: #ddf4ff;
+  border-color: #54aeff;
+  color: #0a3069;
+}
+
+.shell__nav-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.shell__nav-stack {
+  font-size: 11px;
+  color: var(--shell-muted);
+}
+
+.shell__nav-item[aria-current='page'] .shell__nav-stack {
+  color: #0a3069;
+  opacity: 0.75;
+}
+
+.shell__status {
+  padding: 4px 10px;
+  border: 1px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-bg);
+  color: var(--shell-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.shell__status[data-kind='loading'] {
+  color: #9a6700;
+  border-color: #f5d67b;
+  background: #fff8c5;
+}
+
+.shell__status[data-kind='ready'] {
+  color: #1a7f37;
+  border-color: #aceebb;
+  background: #dafbe1;
+}
+
+.shell__status[data-kind='error'] {
+  color: #cf222e;
+  border-color: #ffcecb;
+  background: #ffebe9;
+}
+
+/* ---------- 舞台与宿主 ---------- */
+
+.shell__main {
+  flex: 1;
+  padding: 20px;
+}
+
+.shell__stage {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+/* 每个子应用一个宿主节点，非激活状态仅隐藏、不销毁，
+   因此 ShadowRoot 与子应用模块实例会常驻，状态天然互不干扰 */
+.mfe-host {
+  display: none;
+}
+
+.mfe-host.is-active {
+  display: block;
+}
+
+/* ---------- 页脚 ---------- */
+
+.shell__footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 10px 20px;
+  border-top: 1px solid var(--shell-border);
+  background: var(--shell-surface);
+  color: var(--shell-muted);
+  font-size: 12px;
+}
+
+.shell__events {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .shell__nav-stack {
+    display: none;
+  }
+
+  .shell__main {
+    padding: 14px;
+  }
+}

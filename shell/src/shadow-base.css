@@ -1,0 +1,65 @@
+/*
+ * 注入到每个子应用 ShadowRoot 的基础样式。
+ * 这里定义的 CSS 变量会向下继承到子应用的整棵子树，
+ * 子应用可以直接使用，也可以在自己的样式里覆盖。
+ */
+
+:host {
+  display: block;
+  color: #1f2328;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+
+  --mfe-surface: #ffffff;
+  --mfe-surface-alt: #f6f8fa;
+  --mfe-border: #d8dee4;
+  --mfe-text: #1f2328;
+  --mfe-muted: #656d76;
+  --mfe-accent: #0969da;
+  --mfe-radius: 8px;
+  --mfe-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+:host *,
+:host *::before,
+:host *::after {
+  box-sizing: border-box;
+}
+
+.mfe-container {
+  min-height: 1px;
+}
+
+.mfe-error {
+  padding: 16px 18px;
+  border: 1px solid #ffcecb;
+  border-radius: var(--mfe-radius);
+  background: #ffebe9;
+  color: #82071e;
+}
+
+.mfe-error h2 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.mfe-error pre {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  border: 1px solid #ffcecb;
+  border-radius: 6px;
+  background: #ffffff;
+  font-family: var(--mfe-font-mono);
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.mfe-error p {
+  margin: 0;
+  font-size: 12px;
+}

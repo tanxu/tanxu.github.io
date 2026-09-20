@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>微前端 Shell</title>
+    <meta name="description" content="Shell 主应用：统一路由与子应用装载，不承载任何业务状态" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="shell__header">
+        <div class="shell__brand">
+          <span class="shell__logo" aria-hidden="true"></span>
+          <span>MFE Shell</span>
+        </div>
+        <nav class="shell__nav" id="nav" aria-label="子应用导航"></nav>
+        <div class="shell__status" id="status" data-kind="idle" role="status" aria-live="polite">初始化</div>
+      </header>
+
+      <main class="shell__main">
+        <!-- 子应用宿主节点由 Shell 运行时动态注入，每个子应用一个 ShadowRoot -->
+        <div class="shell__stage" id="stage"></div>
+      </main>
+
+      <footer class="shell__footer">
+        <span>Shell 不持有业务状态 · 子应用通过 CustomEvent 契约通信</span>
+        <span class="shell__events" id="events">最近事件：—</span>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
